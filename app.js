@@ -4,7 +4,7 @@ const $ = require('cheerio');
 var TurndownService = require('turndown')
 var turndownService = new TurndownService()
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 const viaBonaUrl = 'https://www.via-bona.com/sl/ponudba-hrane/malice-in-kosila/'
 
