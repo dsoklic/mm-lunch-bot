@@ -10,6 +10,7 @@ const viaBonaUrl = 'https://www.via-bona.com/sl/ponudba-hrane/malice-in-kosila/'
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
 app.get('/', (req, res) => getLunchInfo(res))
+app.post('/', (req, res) => getLunchInfo(res))
 
 function getLunchInfo(res) {
     rp(viaBonaUrl).then((html) => {
