@@ -7,6 +7,10 @@ const turndownService = new TurndownService();
 const app = express();
 const port = process.env.PORT || 8000
 
+const viaBonaUrl = 'https://www.via-bona.com/sl/ponudba-hrane/malice-in-kosila/';
+const kurjiTatUrl = 'https://docs.google.com/document/u/1/d/e/2PACX-1vShhBZHuTFuFZxZIS2fnWCZrMuKGHpVtYsWjuik02i_S7CMAYo8zRjS5p3tm9WqsEY3KqssFkHZY-kI/pub?embedded=true';
+const kondorUrl = 'https://restavracijakondor.si/#menu';
+
 app.listen(port, () => console.log(`App listening on port ${port}!`));
 app.get('/', (req, res) => getLunchInfo(res));
 app.post('/', (req, res) => getLunchInfo(res));
@@ -18,8 +22,9 @@ app.post('/', (req, res) => getLunchInfo(res));
 function getLunchInfo(res) {
     // Execute all menu requests in parallel.
     async.parallel([
-        getViaBonaMenu,
-        getKurjiTatMenu
+        (callback) => simpleUrlRequest("Via Bona", viaBonaUrl, 'div.ck-text', callback),
+        (callback) => simpleUrlRequest("Kurji tat", kurjiTatUrl, 'table', callback),
+        (callback) => getKondorMenu(callback)
     ], (err, results) => {
         if (err != null) {
             // handle error
@@ -29,38 +34,47 @@ function getLunchInfo(res) {
         }
 
         // Concatinate all returned results and return them in the json.
-        res.json({'text': results.join("\n")});
+        res.json({'text': results.join("\n\n")});
     });
 }
 
 /**
- * Get the menu from Via Bona.
- * @param callback Callback that is called with the result.
+ * Make a simple HTTP request, select only one element on the page and
+ * convert it to Markdown.
+ * 
+ * @param title Title to add before the menu.
+ * @param url URL of page with the menu.
+ * @param selector HTML element where the menu is located.
+ * @param callback Called when result is ready.
  */
-function getViaBonaMenu(callback) {
-    let viaBonaUrl = 'https://www.via-bona.com/sl/ponudba-hrane/malice-in-kosila/';
-
-    rp(viaBonaUrl).then((html) => {
+function simpleUrlRequest(title, url, selector, callback) {
+    rp(url).then((html) => {
         //success!
-        let viaBonaMenu = turndownService.turndown($('div.ck-text', html).html());
-        let menu = "#Via Bona\n" + viaBonaMenu;
+        let menu = turndownService.turndown($(selector, html).html());
+        let menuWithTitle = "#" + title + "\n" + menu;
 
-        callback(null, menu);
+        callback(null, menuWithTitle);
     }).catch(callback);
 }
 
 /**
- * Get the menu from Kurji Tat.
- * @param callback Callback that is called with the result.
+ * Get menu of Kondor.
+ * 
+ * This is a special case because we want to truncate the
+ * end of the menu that contains useless text.
+ * 
+ * @param callback Called when result is ready.
  */
-function getKurjiTatMenu(callback) {
-    let kujiTatUrl = "https://docs.google.com/document/u/1/d/e/2PACX-1vShhBZHuTFuFZxZIS2fnWCZrMuKGHpVtYsWjuik02i_S7CMAYo8zRjS5p3tm9WqsEY3KqssFkHZY-kI/pub?embedded=true";
+function getKondorMenu(callback) {
+    simpleUrlRequest('Kondor', kondorUrl, 'div#malice', (err, result) => {
+        if (err != null) {
+            callback(err);
+            return;
+        }
 
-    rp(kujiTatUrl).then((html) => {
-        //success!
-        let kurjiTatMenu = turndownService.turndown($('table', html).html());
-        let menu = "#Kurji tat\n" + kurjiTatMenu;
+        let endOfMenu = '### Naročite se na tedensko ponudbo malic';
+        let indexOfEnd = result.indexOf(endOfMenu);
 
-        callback(null, menu);
-    }).catch(callback);
+        callback(null, result.substring(0, indexOfEnd));
+    });
 }
