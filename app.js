@@ -34,7 +34,7 @@ function getLunchInfo(res) {
         }
 
         // Concatinate all returned results and return them in the json.
-        res.json({'text': results.join("\n\n")});
+        res.json({'text': results.join("\n\n"), 'response_type': 'in_channel'});
     });
 }
 
