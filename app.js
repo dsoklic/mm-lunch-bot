@@ -12,8 +12,8 @@ const kurjiTatUrl = 'https://docs.google.com/document/u/1/d/e/2PACX-1vShhBZHuTFu
 const kondorUrl = 'https://restavracijakondor.si/#menu';
 
 app.listen(port, () => console.log(`App listening on port ${port}!`));
-app.get('/', (req, res) => getLunchInfo(res));
-app.post('/', (req, res) => getLunchInfo(res));
+app.get('/', (req, res) => res.json({"text": "Hey there! It's me, your MM bot.", 'response_type': 'in_channel'}));
+app.post('/', (req, res) => res.json({"text": "Hey there! It's me, your MM bot.", 'response_type': 'in_channel'}));
 
 /**
  * The all lunch menus and return them.
