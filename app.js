@@ -66,7 +66,7 @@ function simpleUrlRequest(title, url, selector, callback) {
     rp(url).then((html) => {
         //success!
         let menu = turndownService.turndown($(selector, html).html());
-        let menuWithTitle = "#" + title + "\n" + menu;
+        let menuWithTitle = "# " + title + "\n" + menu;
 
         callback(null, menuWithTitle);
     }).catch(callback);
