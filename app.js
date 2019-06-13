@@ -11,9 +11,11 @@ const viaBonaUrl = 'https://www.via-bona.com/sl/ponudba-hrane/malice-in-kosila/'
 const kurjiTatUrl = 'https://docs.google.com/document/u/1/d/e/2PACX-1vShhBZHuTFuFZxZIS2fnWCZrMuKGHpVtYsWjuik02i_S7CMAYo8zRjS5p3tm9WqsEY3KqssFkHZY-kI/pub?embedded=true';
 const kondorUrl = 'https://restavracijakondor.si/#menu';
 
+const tempText = 'Yes yes, I will work on this bot. ';
+
 app.listen(port, () => console.log(`App listening on port ${port}!`));
-app.get('/', (req, res) => res.json({"text": "Hey there! It's me, your MM bot.", 'response_type': 'in_channel'}));
-app.post('/', (req, res) => res.json({"text": "Hey there! It's me, your MM bot.", 'response_type': 'in_channel'}));
+app.get('/', (req, res) => res.json({"text": tempText, 'response_type': 'in_channel'}));
+app.post('/', (req, res) => res.json({"text": tempText, 'response_type': 'in_channel'}));
 
 /**
  * The all lunch menus and return them.
