@@ -12,8 +12,21 @@ const kurjiTatUrl = 'https://docs.google.com/document/u/1/d/e/2PACX-1vShhBZHuTFu
 const kondorUrl = 'https://restavracijakondor.si/#menu';
 
 app.listen(port, () => console.log(`App listening on port ${port}!`));
-app.get('/', (req, res) => getLunchInfo(res));
-app.post('/', (req, res) => getLunchInfo(res));
+app.get('/', (req, res) => returnCachedMenu(res));
+app.post('/', (req, res) => returnCachedMenu(res));
+
+app.get('/update', (req, res) => getLunchInfo(res));
+
+var cachedMenu = ["Not yet initialized"];
+
+/**
+ * Return the menu that is cached in memory.
+ * @param res Response object used to return response.
+ */
+function returnCachedMenu(res) {
+    // Concatinate all returned results and return them in the json.
+    res.json({'text': cachedMenu.join("\n\n"), 'response_type': 'in_channel'});
+}
 
 /**
  * The all lunch menus and return them.
@@ -29,12 +42,12 @@ function getLunchInfo(res) {
         if (err != null) {
             // handle error
             console.error(err);
-            res.json({'text': err.message});
+            res.send(err.message);
             return;
         }
 
-        // Concatinate all returned results and return them in the json.
-        res.json({'text': results.join("\n\n"), 'response_type': 'in_channel'});
+        cachedMenu = results;
+        res.send("Ok");
     });
 }
 
