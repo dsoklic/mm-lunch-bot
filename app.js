@@ -25,7 +25,7 @@ var cachedMenu = ["Not yet initialized"];
  */
 function returnCachedMenu(res) {
     // Concatinate all returned results and return them in the json.
-    res.json({'text': cachedMenu.join("\n\n"),
+    res.json({'text': 'Here are your lunch menus:',
               'extra_responses': cachedMenu.map(x => {return {'text': x}}),
               'response_type': 'in_channel'});
 }
